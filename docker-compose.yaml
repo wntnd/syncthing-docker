@@ -4,7 +4,7 @@ services:
   syncthing:
     image: syncthing/syncthing:2.1.7
     hostname: syncthing-vps
-    user: "1000:1000"
+    user: "${PUID:?Set PUID in .env}:${PGID:?Set PGID in .env}"
     environment:
       STGUIADDRESS: http://0.0.0.0:8384
       STNOUPGRADE: "1"
