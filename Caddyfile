@@ -1,0 +1,7 @@
+{
+	email admin@example.com
+}
+
+sync.example.com {
+	reverse_proxy syncthing:8384
+}

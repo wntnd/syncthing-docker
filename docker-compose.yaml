@@ -1,0 +1,43 @@
+name: syncthing
+
+services:
+  syncthing:
+    image: syncthing/syncthing:2.1.7
+    hostname: syncthing-vps
+    user: "1000:1000"
+    environment:
+      STGUIADDRESS: http://0.0.0.0:8384
+      STNOUPGRADE: "1"
+    volumes:
+      - /srv/syncthing/config:/var/syncthing/config
+      - /srv/syncthing/data:/var/syncthing/data
+    ports:
+      # Only for local access / SSH tunnel, NOT exposed to the internet.
+      - "127.0.0.1:8384:8384"
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+    restart: unless-stopped
+    stop_grace_period: 1m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  caddy:
+    image: caddy:2.11.7-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /srv/syncthing/caddy/data:/data
+      - /srv/syncthing/caddy/config:/config
+    depends_on:
+      - syncthing
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
